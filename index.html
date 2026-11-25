@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Royal TopUp</title>
+<style>
+:root{--bg:#090d18;--panel:#121a2b;--line:#26334d;--gold:#f7c75b;--muted:#9eacc5;--text:#f4f7ff;--green:#27c58b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#263354 0,#090d18 48%);font-family:system-ui,"Noto Sans Bengali",sans-serif;color:var(--text)}
+header{padding:18px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff16;position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(12px);z-index:3}
+.brand{font-weight:900;letter-spacing:.5px;font-size:21px}.brand span{color:var(--gold)}button{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}.adminBtn{background:#202b42;color:#fff}
+main{max-width:1050px;margin:32px auto;padding:0 16px}.hero{text-align:center;padding:32px 10px 26px}.eyebrow{color:var(--gold);font-weight:800;letter-spacing:2px;font-size:12px}.hero h1{font-size:clamp(32px,7vw,56px);margin:10px 0}.hero p{color:var(--muted);margin:0}
+.sectionTitle{display:flex;justify-content:space-between;align-items:center;margin:22px 0 14px}.sectionTitle h2{margin:0;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px}.package{background:linear-gradient(145deg,#17233a,#101726);border:1px solid var(--line);border-radius:17px;padding:17px;text-align:left;color:var(--text);transition:.18s}.package:hover,.package.selected{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 30px #0005}.diam{font-size:22px;font-weight:900}.price{color:var(--gold);font-weight:900;margin-top:8px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.card{background:#111a2b;border:1px solid var(--line);border-radius:18px;padding:20px;margin:18px 0}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}label{display:block;color:#c5d0e4;font-size:13px;margin-bottom:7px}input,select,textarea{width:100%;background:#0b1220;border:1px solid #34425d;color:#fff;padding:13px;border-radius:11px;font:inherit;outline:none}input:focus,select:focus{border-color:var(--gold)}.methods{display:flex;gap:10px;flex-wrap:wrap}.method{flex:1;min-width:130px;background:#202b42;color:#fff;border:1px solid #34425d}.method.active{border-color:var(--gold);background:#3b3020}.paybox{background:#0b1220;border:1px dashed #465675;padding:14px;border-radius:12px;margin-top:12px;color:#dbe5f8}.primary{width:100%;background:linear-gradient(90deg,#f7c75b,#e8a82c);color:#17120a;margin-top:16px;font-size:16px}.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}.success{background:#102b25;border:1px solid #1e775a;padding:16px;border-radius:12px;margin-top:14px}.admin{display:none}.admin.open{display:block}.admin h2{margin-top:0}.adminActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.secondary{background:#25324b;color:white}.danger{background:#532b36;color:#fff}.order{border:1px solid var(--line);padding:12px;border-radius:12px;margin:10px 0;background:#0c1423}.order small{color:var(--muted)}footer{text-align:center;padding:30px;color:var(--muted);font-size:12px}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}.hero,.package,.card{animation:rise .45s ease both}
+</style>
+</head>
+<body>
+<header><div class="brand">👑 ROYAL <span>TOPUP</span></div><button class="adminBtn" onclick="adminLogin()">Admin Panel</button></header>
+<main>
+<section class="hero"><div class="eyebrow">FAST • EASY • SECURE</div><h1>Free Fire <span style="color:var(--gold)">Diamond</span> Top-Up</h1><p>আপনার পছন্দের Diamond Package বেছে নিয়ে অর্ডার করুন।</p></section>
+<div class="sectionTitle"><h2>💎 Diamond Packages</h2><span class="muted">১০টি প্যাকেজ</span></div>
+<div id="packages" class="grid"></div>
+<section class="card" id="orderSection">
+<h2 style="margin-top:0">অর্ডার তথ্য</h2>
+<div class="formgrid">
+<div><label>Player UID</label><input id="uid" inputmode="numeric" placeholder="আপনার Player UID লিখুন"></div>
+<div><label>Player Name (ঐচ্ছিক)</label><input id="player" placeholder="গেমের নাম"></div>
+</div>
+<div style="margin-top:17px"><label>পেমেন্ট মাধ্যম নির্বাচন করুন</label><div class="methods"><button class="method active" id="bkash" onclick="chooseMethod('bKash')">বিকাশ</button><button class="method" id="nagad" onclick="chooseMethod('Nagad')">নগদ</button></div></div>
+<div class="paybox" id="paybox">পেমেন্ট নম্বর: <b id="paynumber">সেট করা হয়নি</b><br><span class="muted">উপরের নম্বরে নির্ধারিত টাকা Send Money করে Transaction ID দিন।</span></div>
+<div style="margin-top:14px"><label>Transaction ID</label><input id="trx" placeholder="পেমেন্টের Transaction ID"></div>
+<button class="primary" onclick="placeOrder()">অর্ডার কনফার্ম করুন</button>
+<div id="result"></div>
+<p class="muted">নোট: অর্ডার দেওয়ার আগে UID, প্যাকেজ ও পেমেন্টের তথ্য ভালোভাবে যাচাই করুন।</p>
+</section>
+<section class="card admin" id="admin">
+<h2>⚙️ Admin Panel</h2><p class="muted">এই ডেমোতে সেটিংস ও অর্ডার এই ব্রাউজারের local storage-এ থাকে।</p>
+<div class="formgrid">
+<div><label>bKash নম্বর</label><input id="setBkash" placeholder="01XXXXXXXXX"></div>
+<div><label>Nagad নম্বর</label><input id="setNagad" placeholder="01XXXXXXXXX"></div>
+</div>
+<div class="adminActions"><button class="primary" style="width:auto;margin:0" onclick="saveSettings()">নম্বর সেভ করুন</button><button class="secondary" onclick="changePass()">Admin PIN পরিবর্তন</button><button class="secondary" onclick="exportOrders()">অর্ডার CSV ডাউনলোড</button><button class="danger" onclick="adminLogout()">লগআউট</button></div>
+<h3>প্যাকেজ পরিবর্তন</h3><div id="editPackages"></div><button class="secondary" onclick="savePackages()">প্যাকেজ আপডেট করুন</button>
+<h3>কাস্টমার অর্ডার</h3><div id="orders"></div>
+</section>
+</main><footer>© Royal TopUp • Customer support details will be added by the owner.</footer>
+<script>
+const defaults=[["500","8.5K"],["780","15.5K"],["1000","22K"],["1200","28K"],["1500","37K"],["2100","53K"],["2600","68K"],["3000","81K"],["4000","113K"],["5000","150K"]];
+let packages=JSON.parse(localStorage.getItem("rt_packages")||"null")||defaults.map(x=>({price:+x[0],diamonds:x[1]}));
+let settings=JSON.parse(localStorage.getItem("rt_settings")||'{"bKash":"","Nagad":""}');
+let orders=JSON.parse(localStorage.getItem("rt_orders")||"[]"), selected=-1, method="bKash", isAdmin=false;
+function money(n){return Number(n).toLocaleString("en-US")}
+function renderPackages(){document.getElementById("packages").innerHTML=packages.map((p,i)=>`<button class="package ${selected===i?'selected':''}" onclick="selectPackage(${i})"><div class="diam">💎 ${p.diamonds}</div><div class="sub">Diamonds</div><div class="price">৳ ${money(p.price)}</div></button>`).join("")}
+function selectPackage(i){selected=i;renderPackages();document.getElementById("orderSection").scrollIntoView({behavior:"smooth",block:"start"})}
+function chooseMethod(m){method=m;document.getElementById("bkash").classList.toggle("active",m==="bKash");document.getElementById("nagad").classList.toggle("active",m==="Nagad");document.getElementById("paynumber").textContent=settings[m]||"সেট করা হয়নি"}
+function placeOrder(){const uid=document.getElementById("uid").value.trim(),trx=document.getElementById("trx").value.trim(),result=document.getElementById("result");if(selected<0)return alert("আগে একটি Diamond Package নির্বাচন করুন।");if(!/^\d{5,20}$/.test(uid))return alert("সঠিক Player UID দিন।");if(!trx)return alert("Transaction ID দিন।");if(!settings[method])return alert("Admin এখনো "+method+" নম্বর সেট করেননি।");let p=packages[selected],o={id:"RT"+Date.now(),uid,player:document.getElementById("player").value.trim(),package:p.diamonds,price:p.price,method,number:settings[method],trx,date:new Date().toLocaleString("bn-BD"),status:"Pending"};orders.unshift(o);localStorage.setItem("rt_orders",JSON.stringify(orders));result.innerHTML=`<div class="success"><b>অর্ডার গ্রহণ করা হয়েছে!</b><br>Order ID: ${o.id}<br>স্ট্যাটাস: Pending<br><span class="muted">পেমেন্ট যাচাইয়ের পর Admin অর্ডার আপডেট করবেন।</span></div>`;document.getElementById("trx").value="";if(isAdmin)renderOrders()}
+function adminLogin(){if(isAdmin){document.getElementById("admin").classList.toggle("open");return}let pin=prompt("Admin PIN দিন (প্রথমবার: 2468)");if(pin===null)return;let saved=localStorage.getItem("rt_pin")||"2468";if(pin!==saved)return alert("ভুল PIN");isAdmin=true;document.getElementById("admin").classList.add("open");document.getElementById("setBkash").value=settings.bKash;document.getElementById("setNagad").value=settings.Nagad;renderEditor();renderOrders();document.getElementById("admin").scrollIntoView({behavior:"smooth"})}
+function adminLogout(){isAdmin=false;document.getElementById("admin").classList.remove("open")}
+function saveSettings(){settings={bKash:document.getElementById("setBkash").value.trim(),Nagad:document.getElementById("setNagad").value.trim()};localStorage.setItem("rt_settings",JSON.stringify(settings));chooseMethod(method);alert("পেমেন্ট নম্বর সেভ হয়েছে।")}
+function changePass(){let old=prompt("বর্তমান PIN দিন");if(old!==(localStorage.getItem("rt_pin")||"2468"))return alert("ভুল PIN");let n=prompt("নতুন PIN (কমপক্ষে 4 অক্ষর)");if(!n||n.length<4)return alert("PIN কমপক্ষে 4 অক্ষরের হতে হবে");localStorage.setItem("rt_pin",n);alert("PIN পরিবর্তন হয়েছে।")}
+function renderEditor(){document.getElementById("editPackages").innerHTML=packages.map((p,i)=>`<div class="formgrid" style="margin:8px 0"><div><label>Diamond</label><input id="d${i}" value="${p.diamonds}"></div><div><label>Price (TK)</label><input id="p${i}" type="number" value="${p.price}"></div></div>`).join("")}
+function savePackages(){packages=packages.map((p,i)=>({diamonds:document.getElementById("d"+i).value.trim(),price:Number(document.getElementById("p"+i).value)}));if(packages.some(p=>!p.diamonds||!Number.isFinite(p.price)||p.price<=0))return alert("সব প্যাকেজের তথ্য সঠিকভাবে দিন");localStorage.setItem("rt_packages",JSON.stringify(packages));renderPackages();renderEditor();alert("প্যাকেজ আপডেট হয়েছে।")}
+function renderOrders(){document.getElementById("orders").innerHTML=orders.length?orders.map((o,i)=>`<div class="order"><b>${o.package} Diamonds — ৳${money(o.price)}</b><br><small>Order: ${o.id} • UID: ${o.uid} • ${o.method} • Trx: ${o.trx}<br>${o.date} • Status: ${o.status}</small><div class="adminActions"><button class="secondary" onclick="setStatus(${i},'Approved')">Approve</button><button class="danger" onclick="setStatus(${i},'Rejected')">Reject</button></div></div>`).join(""):"<p class='muted'>এখনো কোনো অর্ডার নেই।</p>"}
+function setStatus(i,s){orders[i].status=s;localStorage.setItem("rt_orders",JSON.stringify(orders));renderOrders()}
+function exportOrders(){let rows=[["Order ID","UID","Player","Package","Price","Method","Transaction ID","Date","Status"],...orders.map(o=>[o.id,o.uid,o.player,o.package,o.price,o.method,o.trx,o.date,o.status])];let csv=rows.map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(",")).join("\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv"}));a.download="royal-topup-orders.csv";a.click();URL.revokeObjectURL(a.href)}
+renderPackages();chooseMethod(method);
+</script>
+</body></html>
